@@ -18,11 +18,18 @@ async def user_jwt_verifier(
     jwt_handler = JWTHandler(EnvironmentSettings.TOKEN_SECRET)
     user_repo = UserRepo(db_session)
     decoded_token = jwt_handler.decode(authorization)
-    if "id" in decoded_token:
-        request.user_id = UUID(decoded_token["id"])
-        request.user = await user_repo.find_by_id(decoded_token["id"])
-    else:
+    if not "id" in decoded_token:
         raise SimpleException(
             HTTPStatus.UNAUTHORIZED,
             "Invalid token provided ",
         )
+
+    request.user_id = UUID(decoded_token["id"])
+    current_user = await user_repo.by_id(UUID(decoded_token["id"]))
+    if not current_user:
+        raise SimpleException(
+            HTTPStatus.UNAUTHORIZED,
+            "User not found",
+        )
+    request.current_user = current_user
+    return current_user

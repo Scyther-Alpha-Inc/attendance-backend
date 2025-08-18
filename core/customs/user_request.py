@@ -15,6 +15,6 @@ class UserRequest(Request):
     ):
         super().__init__(scope, receive, send),
         self.user_id = user_id
-        self.user = user
+        self.current_user = current_user
 
-    user: User
+    current_user: User

@@ -25,6 +25,7 @@ class UserAuthController:
         return {
             "token": token,
             "role": created_user.role,
+            "user": created_user.model_dump(exclude={"pin"}),
         }
 
     async def populate_user(self, users: list[User]):
@@ -45,4 +46,9 @@ class UserAuthController:
             {"id": str(user.id)},
             EnvironmentSettings.ACCESS_EXPIRES_IN_MIN,
         )
-        return {"token": token, "role": user.role}
+        
+        return {
+            "token": token,
+            "role": user.role,
+            "user": user.model_dump(exclude={"pin"}),
+        }

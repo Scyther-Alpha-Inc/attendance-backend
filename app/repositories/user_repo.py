@@ -32,15 +32,21 @@ class UserRepo:
         except SQLAlchemyError as e:
             await self.session.rollback()
             raise e
+        
     async def bulk_create(self, users: List[User]):
         try:
             self.session.add_all(users)
             await self.session.commit()
+            await self.session.refresh(users)
             return users
         except SQLAlchemyError as e:
             await self.session.rollback()
             raise e
         
+    async def by_id(self, id: UUID):
+        stmt = select(User).filter(User.id == id)
+        result = await self.session.execute(stmt)
+        return result.scalar_one_or_none()
 
     async def by_gctu_id(self, gctu_id: str):
         stmt = select(User).where(User.gctu_id == gctu_id)

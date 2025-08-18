@@ -13,3 +13,4 @@ class Course(SQLModel, table=True):
     lecturer_id: Optional[UUID] = Field(foreign_key="users.id", default=None)
     department_id: Optional[UUID] = Field(foreign_key="departments.id", default=None)
     sessions: List[Session] = Relationship()
+    

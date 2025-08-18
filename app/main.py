@@ -12,7 +12,7 @@ from .routers import router
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await sessionmanager.init_models()
-    await pre_populate()
+    # await pre_populate()
     yield
 
     if sessionmanager._engine is not None:

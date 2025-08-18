@@ -2,4 +2,5 @@ from pydantic import UUID4, BaseModel
 
 
 class AttendanceInput(BaseModel):
-    student_id: UUID4
+    enrollment_id: UUID4
+

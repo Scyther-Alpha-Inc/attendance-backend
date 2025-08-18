@@ -32,3 +32,13 @@ async def get_session(
     lecturer_session_controller: LecturerSessionControllerDep,
 ):
     return await lecturer_session_controller.get_session(id)
+
+
+@session_router.get(
+    "/courses/{course_id}",
+)
+async def get_sessions_by_course(
+    course_id: UUID4,
+    lecturer_session_controller: LecturerSessionControllerDep,
+):
+    return await lecturer_session_controller.get_sessions_by_course(course_id)

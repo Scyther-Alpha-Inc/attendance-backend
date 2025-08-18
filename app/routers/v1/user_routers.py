@@ -11,13 +11,6 @@ from ...dependencies.db.db_session_dep import DBSessionDep
 user_router = APIRouter(prefix="/users", tags=["users"])
 
 
-@user_router.get("/populate")
-def get_users(
-    db_session: DBSessionDep,
-):
-    return {"message": "Hello, World!"}
-
-
 @user_router.post("/bulk-create")
 async def bulk_create_users(
     users: List[UserCreateInput],

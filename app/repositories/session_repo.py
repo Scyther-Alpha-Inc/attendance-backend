@@ -1,7 +1,7 @@
 from uuid import UUID
 from app.models.session import Session
 from sqlalchemy.ext.asyncio import AsyncSession
-
+from sqlmodel import select
 
 
 class SessionRepo:
@@ -21,3 +21,14 @@ class SessionRepo:
         if not session:
             return None
         return session
+
+    async def get_by_course_id(self, course_id: UUID, page: int = 1, limit: int = 10):
+        offset = (page - 1) * limit
+        stmt = (
+            select(Session)
+            .where(Session.course_id == course_id)
+            .limit(limit)
+            .offset(offset)
+        )
+        result = await self.__session.execute(stmt)
+        return result.scalars().all()

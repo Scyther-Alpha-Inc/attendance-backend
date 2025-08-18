@@ -9,5 +9,13 @@ from app.schema.attendance import AttendanceInput
 class SessionInput(BaseModel):
     id: UUID4
     session_type: SessionEnvironment
-    class_id: UUID4
+    course_id: UUID4
     attendances: List[AttendanceInput]
+
+
+class SessionOutput(BaseModel):
+    id: UUID4
+    session_type: SessionEnvironment
+    course_id: UUID4
+    attendance_count: int
+    

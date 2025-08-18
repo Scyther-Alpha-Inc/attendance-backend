@@ -1,4 +1,7 @@
 import asyncio
+
+from app.models.enrollment import Enrollment
+from app.repositories.enrollment_repo import EnrollmentRepo
 from .db.database_session import sessionmanager
 from .models.department import Department
 from .models.course import Course
@@ -86,7 +89,8 @@ async def pre_populate():
 
         user_repo = UserRepo(session)
         department_repo = DepartmentRepo(session)
-
+        course_repo = CourseRepo(session)
+        enrollment_repo = EnrollmentRepo(session)
 
         department_models = []
         for department in departments:
@@ -114,7 +118,7 @@ async def pre_populate():
         except Exception as e:
             logger.error(e)
             logger.error(department_models)
-            
+
         lecturer_models = []
         for lecturer in lecturers:
             lecturer["pin"] = PasswordHandler.hash(lecturer["pin"])
@@ -130,10 +134,18 @@ async def pre_populate():
             user["pin"] = PasswordHandler.hash(user["pin"])
             student_models.append(User(**user))
         try:
-            await user_repo.bulk_create(student_models)
+           student_models= await user_repo.bulk_create(student_models)
         except Exception as e:
             logger.error(e)
             logger.error(student_models)
+        enrollment_models = []
+        first_course = await course_repo.first()
+        for student in student_models:
+            enrollment_models.append(Enrollment(student_id=student.id, course_id=first_course.id))
+        try:
+            await enrollment_repo.bulk_create(enrollment_models)
+        except Exception as e:
+            logger.error(e)
         # for class_model in class_models:
         #     await class_repo.create(Class(**class_model))
         # for course in courses:

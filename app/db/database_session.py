@@ -7,6 +7,7 @@ from ..models.attendance import Attendance
 from ..models.course import Course
 from ..models.session import Session
 from ..models.user import User
+from ..models.enrollment import Enrollment
 
 
 class DatabaseSessionManager:
