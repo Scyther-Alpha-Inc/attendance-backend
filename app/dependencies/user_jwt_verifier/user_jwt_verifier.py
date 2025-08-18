@@ -1,4 +1,4 @@
-from email.header import Header
+from fastapi import Header
 from http import HTTPStatus
 from typing import Annotated
 from uuid import UUID
@@ -12,8 +12,8 @@ from core.security.jwt_handler import JWTHandler
 
 async def user_jwt_verifier(
     db_session: DBSessionDep,
-    request: UserRequest,
     authorization: Annotated[str, Header()],
+    request: UserRequest,
 ):
     jwt_handler = JWTHandler(EnvironmentSettings.TOKEN_SECRET)
     user_repo = UserRepo(db_session)

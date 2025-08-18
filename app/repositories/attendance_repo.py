@@ -16,3 +16,12 @@ class AttendanceRepo:
         except SQLAlchemyError as e:
             await self.session.rollback()
             raise e
+
+    async def bulk_create(self, attendances: list[Attendance]):
+        try:
+            self.session.add_all(attendances)
+            await self.session.commit()
+            return attendances
+        except SQLAlchemyError as e:
+            await self.session.rollback()
+            raise e

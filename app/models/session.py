@@ -1,12 +1,16 @@
-from sqlmodel import SQLModel, Field
+from typing import List
 
 from app.enums.session_environment import SessionEnvironment
+from .attendance import Attendance
+from sqlmodel import SQLModel, Field, Relationship
+
 from uuid import UUID
 from uuid import uuid4
 
 
 class Session(SQLModel, table=True):
-    id: UUID = Field(primary_key=True, default=lambda: uuid4())
+    __tablename__ = "sessions"
+    id: UUID = Field(primary_key=True)
     session_type: SessionEnvironment
-    lecturer_id: UUID = Field(foreign_key="user.id")
-    class_id: UUID = Field(foreign_key="class.id")
+    course_id: UUID = Field(foreign_key="courses.id")
+    attendances: List[Attendance] = Relationship()
