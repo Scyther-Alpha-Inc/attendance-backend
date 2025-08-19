@@ -2,6 +2,7 @@ from pydantic import UUID4
 from app.controllers.user_auth import UserAuthController
 from app.models.attendance import Attendance
 from app.models.session import Session
+from app.repositories.enrollment_repo import EnrollmentRepo
 from app.repositories.session_repo import SessionRepo
 from app.schema.session import SessionInput
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -10,13 +11,27 @@ from sqlalchemy.ext.asyncio import AsyncSession
 class LecturerSessionController:
     def __init__(self, session: AsyncSession):
         self.__session_repo = SessionRepo(session)
+        self.__enrollment_repo = EnrollmentRepo(session)
 
     async def create_session(self, session_input: SessionInput):
         attendances = []
+        student_ids = [attendance.student_id for attendance in session_input.attendances]
+        enrollments = await self.__enrollment_repo.bulk_fetch_by_student_ids(
+            student_ids
+        )
+
         for attendance in session_input.attendances:
+            matching_enrollment = next(
+                (e for e in enrollments if e.student_id == attendance.student_id), None
+            )
+            if not matching_enrollment:
+                continue
+
+
             attendances.append(
                 Attendance(
-                    enrollment_id=attendance.enrollment_id,
+                    enrollment_id=matching_enrollment.id,
+                    score=attendance.score,
                 )
             )
 

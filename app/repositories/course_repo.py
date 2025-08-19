@@ -24,7 +24,6 @@ class CourseRepo:
             await self.session.rollback()
             raise e
 
-
     async def by_lecturer_id(
         self,
         lecturer_id: UUID,
@@ -57,6 +56,63 @@ class CourseRepo:
                 enrollments_subquery.label("enrollments_count"),
             )
             .where(Course.lecturer_id == lecturer_id)
+            .limit(limit)
+            .offset(offset)
+        )
+        result = await self.session.execute(stmt)
+        rows = result.all()
+
+        # Convert rows to response objects
+        courses = []
+        for row in rows:
+            courses.append(
+                CourseDetailResponse(
+                    id=row.id,
+                    title=row.title,
+                    code=row.code,
+                    lecturer_id=row.lecturer_id,
+                    department_id=row.department_id,
+                    sessions_count=row.sessions_count,
+                    enrollments_count=row.enrollments_count,
+                )
+            )
+
+        return courses
+
+    async def by_student_id(
+        self,
+        student_id: UUID,
+        page: int = 1,
+        limit: int = 10,
+    ):
+        """Get courses that a student is enrolled in with counts"""
+        offset = (page - 1) * limit
+
+        # Create subqueries for accurate counts
+        sessions_subquery = (
+            select(func.count(Session.id))
+            .where(Session.course_id == Course.id)
+            .scalar_subquery()
+        )
+
+        enrollments_subquery = (
+            select(func.count(Enrollment.id))
+            .where(Enrollment.course_id == Course.id)
+            .scalar_subquery()
+        )
+
+        stmt = (
+            select(
+                Course.id,
+                Course.title,
+                Course.code,
+                Course.lecturer_id,
+                Course.department_id,
+                sessions_subquery.label("sessions_count"),
+                enrollments_subquery.label("enrollments_count"),
+            )
+            .join(Enrollment, Enrollment.course_id == Course.id)
+            .where(Enrollment.student_id == student_id)
             .limit(limit)
             .offset(offset)
         )
