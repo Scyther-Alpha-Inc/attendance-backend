@@ -24,6 +24,7 @@ class CourseRepo:
             await self.session.rollback()
             raise e
 
+
     async def by_lecturer_id(
         self,
         lecturer_id: UUID,

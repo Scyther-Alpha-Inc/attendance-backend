@@ -1,4 +1,5 @@
 from typing import List
+from datetime import datetime
 
 from app.enums.session_environment import SessionEnvironment
 from .attendance import Attendance
@@ -14,3 +15,4 @@ class Session(SQLModel, table=True):
     session_type: SessionEnvironment
     course_id: UUID = Field(foreign_key="courses.id")
     attendances: List[Attendance] = Relationship()
+    created_at: datetime = Field(default_factory=datetime.now)
