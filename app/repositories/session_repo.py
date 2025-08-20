@@ -59,7 +59,7 @@ class SessionRepo:
                 "session_id": str(attendance.session_id),
                 "score": attendance.score,
                 "created_at": attendance.created_at,
-                "user": {
+                "student": {
                     "id": str(user.id),
                     "gctu_id": user.gctu_id,
                     "name": user.name,

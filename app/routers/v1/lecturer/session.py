@@ -47,7 +47,7 @@ async def get_sessions_by_course(
 
 
 @session_router.get(
-    "/attendance/{session_id}",
+    "/{session_id}/attendance",
 )
 async def get_attendance_by_session_id(
     session_id: UUID4,
