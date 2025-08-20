@@ -15,7 +15,7 @@ class JWTHandler:
 
     def encode(self, payload: dict, exp_min: int) -> str:
         expire = datetime.now(timezone.utc) + timedelta(minutes=exp_min)
-        payload.update({"exp": expire})
+        # payload.update({"exp": expire})
         return jwt.encode(
             payload,
             self.jwt_secret,

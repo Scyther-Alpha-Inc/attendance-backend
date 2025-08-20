@@ -15,4 +15,6 @@ class Session(SQLModel, table=True):
     session_type: SessionEnvironment
     course_id: UUID = Field(foreign_key="courses.id")
     attendances: List[Attendance] = Relationship()
+    started_at: datetime
+    ended_at: datetime
     created_at: datetime = Field(default_factory=datetime.now)

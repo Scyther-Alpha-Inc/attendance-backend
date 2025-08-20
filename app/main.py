@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from app.pre_populate import pre_populate
+# from app.pre_populate import pre_populate
 from core.exceptions.simple_exception import SimpleException
 from .db.database_session import sessionmanager
 from .routers import router

@@ -51,5 +51,9 @@ class LecturerSessionController:
     ):
         return await self.__session_repo.get_by_course_id(course_id, page, limit)
 
+    async def get_attendance_by_session_id(self, session_id: UUID4, page: int = 1, limit: int = 10):
+        attendances = await self.__session_repo.get_attendance_by_session_id(session_id, page, limit)
+        print(attendances)
+        return attendances
     # async def get_sessions_by_lecturer(self, lecturer_id: UUID4):
     #     return await self.__session_repo.get_by_lecturer_id(lecturer_id)

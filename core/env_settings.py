@@ -16,6 +16,8 @@ class EnvSettings(BaseSettings):
     SQL_DB_PORT: int
     REFRESH_EXPIRES_IN_MIN: int
     ACCESS_EXPIRES_IN_MIN: int
+    ZOOM_CLIENT_ID: str
+    ZOOM_CLIENT_SECRET: str
 
     class Config:
         env_file = ".env"

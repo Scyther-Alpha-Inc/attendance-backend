@@ -17,7 +17,8 @@ async def user_jwt_verifier(
 ):
     jwt_handler = JWTHandler(EnvironmentSettings.TOKEN_SECRET)
     user_repo = UserRepo(db_session)
-    decoded_token = jwt_handler.decode(authorization)
+    token =  authorization if "Bearer" in authorization else authorization.split(" ")[-1]
+    decoded_token = jwt_handler.decode(token)
     if not "id" in decoded_token:
         raise SimpleException(
             HTTPStatus.UNAUTHORIZED,

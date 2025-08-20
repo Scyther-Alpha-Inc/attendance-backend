@@ -1,5 +1,3 @@
-import asyncio
-
 from app.models.enrollment import Enrollment
 from app.repositories.enrollment_repo import EnrollmentRepo
 from .db.database_session import sessionmanager
@@ -35,12 +33,14 @@ users = [
         "gctu_id": "GCTU12345",
         "name": "Ama Mensah",
         "program": "BSc Computer Science",
+        "email": "GCTU12345@live.gctu.edu.gh",
         "pin": "222222",
         "role": "student",
     },
     {
         "gctu_id": "GCTU12346",
         "name": "Kofi Adjei",
+        "email": "GCTU12346@live.gctu.edu.gh",
         "program": "BSc Computer Science",
         "pin": "222222",
         "role": "student",
@@ -48,12 +48,14 @@ users = [
     {
         "gctu_id": "GCTU12347",
         "name": "Yaw Owusu",
+        "email": "GCTU12347@live.gctu.edu.gh",
         "program": "BSc Computer Science",
         "pin": "333333",
         "role": "student",
     },
     {
         "gctu_id": "GCTU12348",
+        "email": "GCTU12348@live.gctu.edu.gh",
         "name": "Akosua Boateng",
         "program": "BSc Computer Science",
         "pin": "444444",
@@ -61,6 +63,7 @@ users = [
     },
     {
         "gctu_id": "GCTU12349",
+        "email": "GCTU12349@live.gctu.edu.gh",
         "name": "Kwame Nkrumah",
         "program": "BSc Computer Science",
         "pin": "555555",

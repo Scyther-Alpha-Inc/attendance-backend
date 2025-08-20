@@ -1,8 +1,8 @@
 from datetime import datetime
 from typing import List
+from app.models.user import User
 from sqlmodel import SQLModel, Field, Relationship
 from uuid import UUID, uuid4
-from .session import Session
 
 
 class Enrollment(SQLModel, table=True):
@@ -16,3 +16,4 @@ class Enrollment(SQLModel, table=True):
 
     created_at: datetime = Field(default_factory=datetime.now)
 
+    student: User = Relationship()
