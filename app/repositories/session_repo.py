@@ -42,16 +42,34 @@ class SessionRepo:
     ):
         offset = (page - 1) * limit
         stmt = (
-            select(Attendance)
+            select(Attendance, User)
             .join(Enrollment, Attendance.enrollment_id == Enrollment.id)
             .join(User, Enrollment.student_id == User.id)
-            .group_by(Attendance.id, User.id)
             .where(Attendance.session_id == session_id)
             .limit(limit)
             .offset(offset)
         )
         result = await self.__session.execute(stmt)
-        return result.scalars().all()
+        attendance_with_users = []
+
+        for attendance, user in result.all():
+            attendance_dict = {
+                "id": str(attendance.id),
+                "enrollment_id": str(attendance.enrollment_id),
+                "session_id": str(attendance.session_id),
+                "score": attendance.score,
+                "created_at": attendance.created_at,
+                "user": {
+                    "id": str(user.id),
+                    "gctu_id": user.gctu_id,
+                    "name": user.name,
+                    "email": user.email,
+                    "role": user.role,
+                },
+            }
+            attendance_with_users.append(attendance_dict)
+
+        return attendance_with_users
 
     async def get_attendance_with_users_by_session_id(
         self, session_id: UUID, page: int = 1, limit: int = 10
@@ -87,17 +105,13 @@ class SessionRepo:
         stmt = (
             select(User, Attendance)
             .join(Enrollment, User.id == Enrollment.student_id)
-            .outerjoin(
-                Attendance,
-                (Attendance.enrollment_id == Enrollment.id)
-                & (Attendance.session_id == session_id),
-            )
+            .outerjoin(Attendance, Attendance.session_id == session_id)
             .where(Enrollment.course_id == session.course_id)
             .limit(limit)
             .offset(offset)
         )
         result = await self.__session.execute(stmt)
-        return result.all()
+        return result.scalars().all()
 
     async def get_students_by_session_id(
         self, session_id: UUID, page: int = 1, limit: int = 10
@@ -150,3 +164,81 @@ class SessionRepo:
         )
         result = await self.__session.execute(stmt)
         return result.all()
+
+    async def get_session_attendance_summary(self, session_id: UUID):
+        """Get session with total enrolled, present, and absent counts"""
+        from sqlalchemy import func
+
+        # First get the session to find the course_id
+        session_stmt = select(Session).where(Session.id == session_id)
+        session_result = await self.__session.execute(session_stmt)
+        session = session_result.scalar_one_or_none()
+
+        if not session:
+            return None
+
+        # Get aggregated statistics
+        stmt = (
+            select(
+                Session.id.label("session_id"),
+                Session.course_id,
+                Session.session_type,
+                Session.created_at.label("session_created_at"),
+                func.count(Enrollment.id).label("total_enrolled"),
+                func.count(Attendance.id).label("total_present"),
+                (func.count(Enrollment.id) - func.count(Attendance.id)).label(
+                    "total_absent"
+                ),
+            )
+            .select_from(Session)
+            .join(Enrollment, Session.course_id == Enrollment.course_id)
+            .outerjoin(
+                Attendance,
+                (Attendance.enrollment_id == Enrollment.id)
+                & (Attendance.session_id == session_id),
+            )
+            .where(Session.id == session_id)
+            .group_by(
+                Session.id, Session.course_id, Session.session_type, Session.created_at
+            )
+        )
+
+        result = await self.__session.execute(stmt)
+        row = result.first()
+
+        if not row:
+            return None
+
+        # Get enrolled students using subquery
+        students_stmt = (
+            select(User)
+            .join(Enrollment, User.id == Enrollment.student_id)
+            .where(Enrollment.course_id == session.course_id)
+        )
+        students_result = await self.__session.execute(students_stmt)
+        students = students_result.scalars().all()
+
+        # Convert students to dictionaries
+        users_list = []
+        for student in students:
+            users_list.append(
+                {
+                    "id": str(student.id),
+                    "gctu_id": student.gctu_id,
+                    "name": student.name,
+                    "email": student.email,
+                    "role": student.role,
+                }
+            )
+
+        # Convert to dictionary for JSON serialization
+        return {
+            "session_id": str(row.session_id),
+            "course_id": str(row.course_id),
+            "session_type": row.session_type,
+            "session_created_at": row.session_created_at,
+            "total_enrolled": row.total_enrolled,
+            "total_present": row.total_present,
+            "total_absent": row.total_absent,
+            "users": users_list,
+        }

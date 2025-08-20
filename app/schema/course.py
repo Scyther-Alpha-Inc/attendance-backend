@@ -6,5 +6,5 @@ class CourseDetailResponse(BaseModel):
     id: UUID
     title: str
     code: str
-    sessions_count: int
+    # sessions_count: int
     enrollments_count: int

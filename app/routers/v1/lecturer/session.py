@@ -25,13 +25,15 @@ async def create_session(
 
 
 @session_router.get(
-    "/get/{id}",
+    "/{id}",
 )
 async def get_session(
     id: UUID4,
     lecturer_session_controller: LecturerSessionControllerDep,
 ):
-    return await lecturer_session_controller.get_session(id)
+    data = await lecturer_session_controller.get_session(id)
+    print(data)
+    return data
 
 
 @session_router.get(
@@ -52,3 +54,14 @@ async def get_attendance_by_session_id(
     lecturer_session_controller: LecturerSessionControllerDep,
 ):
     return await lecturer_session_controller.get_attendance_by_session_id(session_id)
+
+@session_router.get(
+    "/enrolled-students/{session_id}",
+)
+async def get_session_details(
+    session_id: UUID4,
+    lecturer_session_controller: LecturerSessionControllerDep,
+):
+    data = await lecturer_session_controller.get_session(session_id)
+    print(data)
+    return data

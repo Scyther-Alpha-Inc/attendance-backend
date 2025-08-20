@@ -33,11 +33,11 @@ class CourseRepo:
         offset = (page - 1) * limit
 
         # Create subqueries for accurate counts
-        sessions_subquery = (
-            select(func.count(Session.id))
-            .where(Session.course_id == Course.id)
-            .scalar_subquery()
-        )
+        # sessions_subquery = (
+        #     select(func.count(Session.id))
+        #     .where(Session.course_id == Course.id)
+        #     .scalar_subquery()
+        # )
 
         enrollments_subquery = (
             select(func.count(Enrollment.id))
@@ -52,7 +52,7 @@ class CourseRepo:
                 Course.code,
                 Course.lecturer_id,
                 Course.department_id,
-                sessions_subquery.label("sessions_count"),
+                # sessions_subquery.label("sessions_count"),
                 enrollments_subquery.label("enrollments_count"),
             )
             .where(Course.lecturer_id == lecturer_id)
@@ -70,10 +70,9 @@ class CourseRepo:
                     id=row.id,
                     title=row.title,
                     code=row.code,
-                    lecturer_id=row.lecturer_id,
                     department_id=row.department_id,
-                    sessions_count=row.sessions_count,
                     enrollments_count=row.enrollments_count,
+                    # sessions_count=row.sessions_count,
                 )
             )
 
