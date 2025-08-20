@@ -27,7 +27,6 @@ class LecturerSessionController:
             if not matching_enrollment:
                 continue
 
-
             attendances.append(
                 Attendance(
                     enrollment_id=matching_enrollment.id,
