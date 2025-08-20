@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 from pydantic import UUID4
 
+from app.dependencies.controllers.lecturer.lecturer_session import LecturerSessionControllerDep
 from app.dependencies.role_verifier.lecturer_verifier import lecturer_verifier
 from core.customs.user_request import UserRequest
 from app.dependencies.controllers.lecturer.lecturer_course_controller import (
@@ -12,6 +13,15 @@ courses_router = APIRouter(
     tags=["courses"],
     dependencies=[Depends(lecturer_verifier)],
 )
+
+@courses_router.get(
+    "/{course_id}/sessions",
+)
+async def get_sessions_by_course(
+    course_id: UUID4,
+    lecturer_session_controller: LecturerSessionControllerDep,
+):
+    return await lecturer_session_controller.get_sessions_by_course(course_id)
 
 
 @courses_router.get("/")
