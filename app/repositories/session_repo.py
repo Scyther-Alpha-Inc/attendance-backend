@@ -1,6 +1,7 @@
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload, selectinload
 from uuid import UUID
 from app.models.attendance import Attendance
+from app.models.course import Course
 from app.models.enrollment import Enrollment
 from app.models.session import Session
 from app.models.user import User
@@ -29,13 +30,28 @@ class SessionRepo:
     async def get_by_course_id(self, course_id: UUID, page: int = 1, limit: int = 10):
         offset = (page - 1) * limit
         stmt = (
-            select(Session)
+            select(Session, Course)
+            .join(Course, Session.course_id == Course.id)
+            .group_by(Session.id, Course.id)
             .where(Session.course_id == course_id)
             .limit(limit)
             .offset(offset)
         )
         result = await self.__session.execute(stmt)
-        return result.scalars().all()
+        sessions = []
+        for session, course in result.all():
+            sessions.append(
+                {
+                    "id": str(session.id),
+                    "course_id": str(session.course_id),
+                    "course_title": course.title,
+                    "session_type": session.session_type,
+                    "started_at": session.started_at,
+                    "ended_at": session.ended_at,
+                    "course_code": course.code,
+                }
+            )
+        return sessions
 
     async def get_attendance_by_session_id(
         self, session_id: UUID, page: int = 1, limit: int = 10

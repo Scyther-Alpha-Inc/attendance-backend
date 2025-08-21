@@ -54,5 +54,4 @@ async def get_session_details(
     lecturer_session_controller: LecturerSessionControllerDep,
 ):
     data = await lecturer_session_controller.get_session(session_id)
-    print(data)
     return data

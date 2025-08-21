@@ -1,5 +1,5 @@
 import contextlib
-from sqlmodel import create_engine, SQLModel
+from sqlmodel import SQLModel
 from typing import Any, AsyncIterator
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from core.env_settings import EnvironmentSettings
@@ -9,11 +9,18 @@ from ..models.session import Session
 from ..models.user import User
 from ..models.enrollment import Enrollment
 from ..models.social_auth import SocialAuth
+from sqlalchemy.orm import sessionmaker
+
 
 class DatabaseSessionManager:
     def __init__(self, host: str, engine_kwargs: dict[str, Any] = {}):
-        self._engine = create_async_engine(host, future=True, **engine_kwargs)
-        self._sessionmaker = async_sessionmaker(
+        self._engine = create_async_engine(
+            host,
+            future=True,
+            echo=True,
+            **engine_kwargs,
+        )
+        self._sessionmaker = sessionmaker(
             self._engine,
             class_=AsyncSession,
             expire_on_commit=False,

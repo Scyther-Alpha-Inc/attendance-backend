@@ -1,12 +1,14 @@
+from __future__ import annotations
 from datetime import datetime
-from .enrollment import Enrollment
+from typing import TYPE_CHECKING
 from sqlmodel import SQLModel, Field, Relationship
 from uuid import UUID
 from uuid import uuid4
-from typing import TYPE_CHECKING
+from .enrollment import Enrollment
 
 if TYPE_CHECKING:
     from .session import Session
+
 
 class Attendance(SQLModel, table=True):
     __tablename__ = "attendances"

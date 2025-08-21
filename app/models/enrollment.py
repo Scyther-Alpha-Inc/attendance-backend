@@ -1,8 +1,8 @@
+from __future__ import annotations
 from datetime import datetime
-from typing import List
-from app.models.user import User
 from sqlmodel import SQLModel, Field, Relationship
 from uuid import UUID, uuid4
+from app.models.user import User
 
 
 class Enrollment(SQLModel, table=True):
