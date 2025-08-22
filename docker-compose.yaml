@@ -1,43 +1,10 @@
 services:
-  db:
-    image: postgres:16.3
-    
-    command: -p ${SQL_DB_PORT}
-    volumes:
-      - gctu_attendance_db:/var/lib/postgresql/data
-    ports:
-      - "${SQL_DB_PORT}:${SQL_DB_PORT}"
-    environment:
-      - POSTGRES_DB=${SQL_DB_NAME}
-      - POSTGRES_USER=${SQL_DB_USERNAME}
-      - POSTGRES_PASSWORD=${SQL_DB_PASSWORD}
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${SQL_DB_USERNAME} -d ${SQL_DB_NAME}"]
-      interval: 5s
-      timeout: 3s
-      retries: 3
-
-    networks:
-      - attendance_netwrk
-
   app:
-    build: 
+    build:
       context: .
       dockerfile: Dockerfile
-    command: uv run uvicorn app.main:app --host 0.0.0.0 --port ${BACKEND_PORT} --reload
+    command: uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     container_name: gctu-attendance-app
-    volumes:
-      - .:/app
+
     ports:
       - "${BACKEND_PORT}:${BACKEND_PORT}"
-    depends_on:
-      - db
-    networks:
-      - attendance_netwrk
-
-volumes:
-  gctu_attendance_db:
-    driver: local
-
-networks:
-  attendance_netwrk:

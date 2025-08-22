@@ -161,6 +161,28 @@ class CourseRepo:
             )
         return None
 
+    async def get_by_code(self, code: str):
+        stmt = select(Course).where(func.lower(Course.code) == func.lower(code))
+        result = await self.session.execute(stmt)
+        return result.scalar_one_or_none()
+
+    async def search(self, query: str, page: int = 1, limit: int = 10):
+        """Search courses by title or code (case-insensitive)"""
+        offset = (page - 1) * limit
+        search_pattern = f"%{query.lower()}%"
+
+        stmt = (
+            select(Course)
+            .where(
+                (func.lower(Course.title).like(search_pattern))
+                | (func.lower(Course.code).like(search_pattern))
+            )
+            .limit(limit)
+            .offset(offset)
+        )
+        result = await self.session.execute(stmt)
+        return result.scalars().all()
+
     async def bulk_create(self, courses: List[Course]):
         try:
             self.session.add_all(courses)

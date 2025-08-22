@@ -15,7 +15,6 @@ class LecturerCourseController:
 
     async def get_course(self, course_id: UUID4):
         course = await self.__course_repo.by_id(course_id)
-        print(course)
         if not course:
             raise SimpleException(
                 HTTPStatus.NOT_FOUND,

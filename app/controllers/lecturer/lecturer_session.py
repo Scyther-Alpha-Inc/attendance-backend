@@ -52,7 +52,6 @@ class LecturerSessionController:
         self, course_id: UUID4, page: int = 1, limit: int = 10
     ):
         courses = await self.__session_repo.get_by_course_id(course_id, page, limit)
-        print(courses)
         return courses
 
     async def get_attendance_by_session_id(self, session_id: UUID4, page: int = 1, limit: int = 10):

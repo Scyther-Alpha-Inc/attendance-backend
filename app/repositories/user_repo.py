@@ -32,7 +32,7 @@ class UserRepo:
         except SQLAlchemyError as e:
             await self.session.rollback()
             raise e
-        
+
     async def bulk_create(self, users: List[User]):
         try:
             self.session.add_all(users)
@@ -42,13 +42,31 @@ class UserRepo:
         except SQLAlchemyError as e:
             await self.session.rollback()
             raise e
-        
+
     async def by_id(self, id: UUID):
         stmt = select(User).filter(User.id == id)
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
 
     async def by_gctu_id(self, gctu_id: str):
-        stmt = select(User).where(User.gctu_id == gctu_id)
+        stmt = select(User).where(func.lower(User.gctu_id) == func.lower(gctu_id))
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
+
+    async def search(self, query: str, page: int = 1, limit: int = 10):
+        """Search users by name, gctu_id, or email (case-insensitive)"""
+        offset = (page - 1) * limit
+        search_pattern = f"%{query.lower()}%"
+
+        stmt = (
+            select(User)
+            .where(
+                (func.lower(User.name).like(search_pattern))
+                | (func.lower(User.gctu_id).like(search_pattern))
+                | (func.lower(User.email).like(search_pattern))
+            )
+            .limit(limit)
+            .offset(offset)
+        )
+        result = await self.session.execute(stmt)
+        return result.scalars().all()

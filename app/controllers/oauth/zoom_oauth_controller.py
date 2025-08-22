@@ -6,6 +6,9 @@ from app.models.social_auth import SocialAuth
 from app.repositories.social_auth import SocialAuthRepo
 from app.utils.zoom_oauth_handler import zoom_oauth_request, zoom_profile_request
 from core.exceptions.simple_exception import SimpleException
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class ZoomOauthController:
@@ -21,6 +24,8 @@ class ZoomOauthController:
         zoom_profile_response = await zoom_profile_request(
             auth_token_response.get("access_token")
         )
+        logger.info(zoom_profile_response)
+        print(zoom_profile_response)
         social_auth = await self.social_auth_repo.get_by_oauth_id(
             zoom_profile_response.id
         )

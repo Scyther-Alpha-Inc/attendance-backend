@@ -17,7 +17,7 @@ class DatabaseSessionManager:
         self._engine = create_async_engine(
             host,
             future=True,
-            echo=True,
+            echo=False,
             **engine_kwargs,
         )
         self._sessionmaker = sessionmaker(

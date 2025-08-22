@@ -11,6 +11,7 @@ class Session(SQLModel, table=True):
     __tablename__ = "sessions"
     id: UUID = Field(primary_key=True, default_factory=lambda: uuid4())
     session_type: SessionEnvironment
+    ref_id: str = Field(default=None)
     course_id: UUID = Field(foreign_key="courses.id")
     attendances: List["Attendance"] = Relationship()
     course: Course = Relationship(back_populates="sessions")

@@ -22,4 +22,5 @@ async def zoom_profile_request(access_token: str) -> ZoomUserProfile:
         async with session.get(url, headers=headers) as response:
             if response.status != 200:
                 raise SimpleException(HTTPStatus.BAD_REQUEST, "Invalid access token")
+            print(await response.json())
             return ZoomUserProfile.model_validate(await response.json())

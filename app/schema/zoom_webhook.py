@@ -40,8 +40,9 @@ class ZoomMeetingObject(BaseModel):
 
 class ZoomWebhookPayload(BaseModel):
     """Model for Zoom webhook payload"""
-
+    id: str
     account_id: str
+    topic: str
     object: ZoomMeetingObject = Field(alias="object")
 
 
