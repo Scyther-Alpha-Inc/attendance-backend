@@ -24,7 +24,6 @@ class EnvSettings(BaseSettings):
         case_sesitive = True
         extra = "ignore"
 
-
 @lru_cache()
 def get_environment_settings() -> EnvSettings:
     return EnvSettings()  # type: ignore
